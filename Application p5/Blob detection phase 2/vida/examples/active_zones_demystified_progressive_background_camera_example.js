@@ -1,6 +1,11 @@
 var camera, vida;
-let noteC;
 let noteA;
+let noteB;
+let noteC;
+let noteD;
+let noteE;
+
+
 
 
 
@@ -12,8 +17,11 @@ let noteA;
 var synth = [];
 
 function preload() {
-  noteC = loadSound("sonC.mp3");
   noteA = loadSound("sonA.mp3");
+  noteB = loadSound("sonB.mp3");
+  noteC = loadSound("sonC.mp3");
+  noteD = loadSound("sonD.mp3");
+  noteE = loadSound("sonE.mp3");
   
 
 }
@@ -84,15 +92,15 @@ function setup() {
     must be exceeded to trigger the zone (so, higher the parameter value =
     lower the zone sensitivity).
   */
-  vida.setActiveZonesNormFillThreshold(0.02);
+  vida.setActiveZonesNormFillThreshold(0.30);
   /*
     Let's create several active zones. VIDA uses normalized (in the range from
     0.0 to 1.0) instead of pixel-based. Thanks to this, the position and size
     of the zones are independent of any eventual changes in the captured image
     resolution.
   */
-  var padding = 0.025; var n = 8;
-  var zoneWidth = 0.08; var zoneHeight = 0.1;
+  var padding = 0.045; var n = 5;
+  var zoneWidth = 0.09; var zoneHeight = 0.1;
   var hOffset = (1.0 - (n * zoneWidth + (n - 1) * padding)) / 2.0;
   var vOffset = 0.45;
   for(var i = 0; i < n; i++) {
@@ -139,7 +147,14 @@ function setup() {
 
      //intensité du son
   noteA.setVolume(0.3);
-  noteC.setVolume(0.5);
+  noteB.setVolume(0.3);
+  noteC.setVolume(0.3);
+  noteD.setVolume(0.3);
+  noteE.setVolume(0.3);
+  // noteB.setVolume(0.3);
+  // noteC.setVolume(0.5);
+  // noteD.setVolume(0.5);
+  // noteE.setVolume(0.5);
 
     /*
       For each active zone, we will also create a separate oscillator that we
@@ -259,6 +274,58 @@ function draw() {
             } else if (noteA.isPlaying() === false) {
               console.log("%c========", 'color: green')
               noteA.play();
+            }
+            
+          }
+
+          if(vida.activeZones[1].isMovementDetectedFlag){
+            
+            if(noteB.isPlaying() === true && noteB.currentTime() > 1) {
+              noteB.stop();
+              noteB.play();
+              console.log("%c========", 'color: red')
+            } else if (noteB.isPlaying() === false) {
+              console.log("%c========", 'color: green')
+              noteB.play();
+            }
+            
+          }
+
+          if(vida.activeZones[2].isMovementDetectedFlag){
+            
+            if(noteC.isPlaying() === true && noteC.currentTime() > 1) {
+              noteC.stop();
+              noteC.play();
+              console.log("%c========", 'color: red')
+            } else if (noteC.isPlaying() === false) {
+              console.log("%c========", 'color: green')
+              noteC.play();
+            }
+            
+          }
+
+          if(vida.activeZones[3].isMovementDetectedFlag){
+            
+            if(noteD.isPlaying() === true && noteD.currentTime() > 1) {
+              noteD.stop();
+              noteD.play();
+              console.log("%c========", 'color: red')
+            } else if (noteD.isPlaying() === false) {
+              console.log("%c========", 'color: green')
+              noteD.play();
+            }
+            
+          }
+
+          if(vida.activeZones[4].isMovementDetectedFlag){
+            
+            if(noteE.isPlaying() === true && noteE.currentTime() > 1) {
+              noteE.stop();
+              noteE.play();
+              console.log("%c========", 'color: red')
+            } else if (noteE.isPlaying() === false) {
+              console.log("%c========", 'color: green')
+              noteE.play();
             }
             
           }
