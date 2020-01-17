@@ -210,15 +210,12 @@ function draw() {
       Now we can display images: source video (mirrored) and subsequent stages
       of image transformations made by VIDA.
     */
-
     //image(vida.currentImage, 0, 240);
-    image(vida.thresholdImage, 0, 0);
-    
-
+    image(vida.thresholdImage, 320, 240);
     // let's also describe the displayed images
     noStroke(); fill(255, 255, 255);
-    text('camera', 20, 260);
-    text('vida: threshold image', 340, 260);
+    // text('camera', 20, 260);
+    // text('vida: threshold image', 340, 260);
     /*
       VIDA has two built-in versions of the function drawing active zones:
         [your vida object].drawActiveZones(x, y);

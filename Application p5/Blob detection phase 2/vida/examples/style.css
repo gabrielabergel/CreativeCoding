@@ -3,7 +3,6 @@
 
 html{
 	background: rgb(253,254,252);
-	background: linear-gradient(180deg, rgba(253,254,252,1) 0%, rgba(255,255,255,1) 92%, rgba(0,0,0,1) 99%);
 }
 
 body { 
@@ -71,13 +70,46 @@ margin-top: -100px;
 	transform: translate(-100%, 0);
 }}
 
-.sketch-holder {
-	position:absolute;
-	top:0;
-	left:0;
-	width:30%;
-	height:30%;
-	z-index:-1;
+#sketch-container {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	background: black;
+    mix-blend-mode: difference;
+
+	/* taille du screen en bas */
+	width: 300px;
+	height: 300px;
 }
 
+#sketch-holder {
+	position: relative;
+	overflow: hidden;
+	width: 260px;
+	height: 260px;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
 
+#sketch-holder canvas {
+	position:absolute;
+	top:-240px;
+	left:-320px;
+}
+
+.text-container {
+	position: fixed;
+	z-index: 1000;
+	width: 100%;
+	height: 100%;
+}
+
+.background {
+	background: repeating-linear-gradient(180deg, rgba(253,254,252,1) 0px, rgba(255,255,255,1) 9px, rgba(0,0,0,1) 10px);
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
