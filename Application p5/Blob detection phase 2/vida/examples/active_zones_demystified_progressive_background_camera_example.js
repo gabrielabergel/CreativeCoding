@@ -4,6 +4,9 @@ let noteB;
 let noteC;
 let noteD;
 let noteE;
+let datablob;
+let arrayOfMagnitude;
+let arrayOfProfondeur;
 
 
 
@@ -22,8 +25,7 @@ function preload() {
   noteC = loadSound("sonC.mp3");
   noteD = loadSound("sonD.mp3");
   noteE = loadSound("sonE.mp3");
-  
-
+  datablob = loadTable("http://127.0.0.1:5500/seisme.tsv", "tsv", "header")
 }
 
 /*
@@ -39,15 +41,28 @@ function initCaptureDevice() {
       '[initCaptureDevice] capture ready. Resolution: ' +
       camera.width + ' ' + camera.height
     );
-  } catch(_err) {
+  } catch (_err) {
     console.log('[initCaptureDevice] capture error: ' + _err);
   }
 }
 
 function setup() {
-  createCanvas(640, 480); // we need some space...
+  var canvas = createCanvas(640, 480);
+
+  // Move the canvas so it’s inside our <div id="sketch-holder">.
+  canvas.parent('sketch-holder');
+  // createCanvas(640, 480); // we need some space...
   initCaptureDevice(); // and access to the camera
 
+
+  for (const line of datablob.rows) {
+    console.log(line.obj["Heure locale"])
+    console.log(line.obj["Magnitude"])
+    console.log(line.obj["Localite"])
+    console.log(line.obj["Profondeur"])
+    console.log(line.obj["Latitude"])
+    console.log(line.obj["Longitude"])
+  }
   /*
     VIDA stuff. One parameter - the current sketch - should be passed to the
     class constructor (thanks to this you can use Vida e.g. in the instance
@@ -103,7 +118,7 @@ function setup() {
   var zoneWidth = 0.06; var zoneHeight = 0.1;
   var hOffset = (1.0 - (n * zoneWidth + (n - 1) * padding)) / 3.4;
   var vOffset = 0.55;
-  for(var i = 0; i < n; i++) {
+  for (var i = 0; i < n; i++) {
     /*
       addActiveZone function (which, of course, adds active zones to the VIDA
       object) comes in two versions:
@@ -145,16 +160,16 @@ function setup() {
       hOffset + i * (zoneWidth + padding), vOffset, zoneWidth, zoneHeight,
     );
 
-     //intensité du son
-  noteA.setVolume(0.3);
-  noteB.setVolume(0.3);
-  noteC.setVolume(0.3);
-  noteD.setVolume(0.3);
-  noteE.setVolume(0.3);
-  // noteB.setVolume(0.3);
-  // noteC.setVolume(0.5);
-  // noteD.setVolume(0.5);
-  // noteE.setVolume(0.5);
+    //intensité du son
+    noteA.setVolume(0.3);
+    noteB.setVolume(0.3);
+    noteC.setVolume(0.3);
+    noteD.setVolume(0.3);
+    noteE.setVolume(0.3);
+    // noteB.setVolume(0.3);
+    // noteC.setVolume(0.5);
+    // noteD.setVolume(0.5);
+    // noteE.setVolume(0.5);
 
     /*
       For each active zone, we will also create a separate oscillator that we
@@ -173,9 +188,9 @@ function setup() {
       to you, you can ignore this part or access additional information , e.g.
       here: https://en.wikipedia.org/wiki/MIDI_tuning_standard
     */
-  //   osc.freq(440.0 * Math.pow(2.0, (60 + (i * 4) - 69.0) / 12.0));
-  //   osc.amp(0.0); osc.start();
-  //  synth[i] = osc;
+    //   osc.freq(440.0 * Math.pow(2.0, (60 + (i * 4) - 69.0) / 12.0));
+    //   osc.amp(0.0); osc.start();
+    //  synth[i] = osc;
   }
 
   frameRate(30); // set framerate
@@ -183,171 +198,174 @@ function setup() {
 
 function draw() {
 
-    if(camera !== null && camera !== undefined) { // safety first
-      background(0, 0, 255);
-      /*
-        Call VIDA update function, to which we pass the current video frame as a
-        parameter. Usually this function is called in the draw loop (once per
-        repetition).
-      */
-      vida.update(camera);
-      /*
-        Now we can display images: source video (mirrored) and subsequent stages
-        of image transformations made by VIDA.
-      */
-      image(vida.currentImage, 0, 0);
-      image(vida.thresholdImage, 320, 240);
-      // let's also describe the displayed images
-      noStroke(); fill(255, 255, 255);
-      text('camera', 20, 20);
-      text('vida: threshold image', 340, 260);
-      /*
-        VIDA has two built-in versions of the function drawing active zones:
-          [your vida object].drawActiveZones(x, y);
-        and
-          [your vida object].drawActiveZones(x, y, w, h);
-        But we want to create our own drawing function, which at the same time
-        will be used for the current handling of zones and reading their statuses
-        (we must also remember about controlling the sound).
-      */
-      // defint size of the drawing
-      var temp_drawing_w = width / 2;  var temp_drawing_h = height / 2; 
-      // offset from the upper left corner
-      var offset_x = 320; var offset_y = 240;
-      // pixel-based zone's coords
-      var temp_x, temp_y, temp_w, temp_h;
-      push(); // store current drawing style and font
-      translate(offset_x, offset_y); // translate coords
-      // set text style and font
-      textFont('Helvetica', 10); textAlign(LEFT, BOTTOM); textStyle(NORMAL);
-      // let's iterate over all active zones
-      for(var i = 0; i < vida.activeZones.length; i++) {
-        
-        // read and convert norm coords to pixel-based
-        temp_x = Math.floor(vida.activeZones[i].normX * temp_drawing_w);
-        temp_y = Math.floor(vida.activeZones[i].normY * temp_drawing_h);
-        temp_w = Math.floor(vida.activeZones[i].normW * temp_drawing_w);
-        temp_h = Math.floor(vida.activeZones[i].normH * temp_drawing_h);
-        // draw zone rect (filled if movement detected)
-        strokeWeight(1);
-        if(vida.activeZones[i].isEnabledFlag) {
-          stroke(255);
-          if(vida.activeZones[i].isMovementDetectedFlag) fill(255);
-          else noFill();
-        }
-        else {
-          stroke(0);
-          /*
-            Theoretically, movement should not be detected within the excluded
-            zone, but VIDA is still in the testing phase, so this line will be
-            useful for testing purposes.
-          */
-          if(vida.activeZones[i].isMovementDetectedFlag) fill(0, 0, 255);
-          else noFill();
-        }
-        rect(temp_x, temp_y, temp_w, temp_h);
-        // print id
-        noStroke();
-        if(vida.activeZones[i].isEnabledFlag) fill(255);
-        else fill(0);
-        text(vida.activeZones[i].id, temp_x, temp_y - 1);
-        /*
-          Using the isChangedFlag flag is very important if we want to trigger an
-          behavior only when the zone has changed status.
-        */
-        if(vida.activeZones[i].isChangedFlag) {
-          // print zone id and status to console ... 
-          console.log(
-            'zone: ' + vida.activeZones[i].id +
-            ' status: ' + vida.activeZones[i].isMovementDetectedFlag
-          );
-          //... and use this information to control the sound.
-          // synth[vida.activeZones[i].id].amp(
-          //   0.1 * vida.activeZones[i].isMovementDetectedFlag
-          // );
-          if(vida.activeZones[0].isMovementDetectedFlag){
-            
-            if(noteA.isPlaying() === true && noteA.currentTime() > 1) {
-              noteA.stop();
-              noteA.play();
-              console.log("%c========", 'color: red')
-            } else if (noteA.isPlaying() === false) {
-              console.log("%c========", 'color: green')
-              noteA.play();
-            }
-            
-          }
+  if (camera !== null && camera !== undefined) { // safety first
+    background(255);
+    /*
+      Call VIDA update function, to which we pass the current video frame as a
+      parameter. Usually this function is called in the draw loop (once per
+      repetition).
+    */
+    vida.update(camera);
+    /*
+      Now we can display images: source video (mirrored) and subsequent stages
+      of image transformations made by VIDA.
+    */
 
-          if(vida.activeZones[1].isMovementDetectedFlag){
-            
-            if(noteB.isPlaying() === true && noteB.currentTime() > 1) {
-              noteB.stop();
-              noteB.play();
-              console.log("%c========", 'color: red')
-            } else if (noteB.isPlaying() === false) {
-              console.log("%c========", 'color: green')
-              noteB.play();
-            }
-            
-          }
+    //image(vida.currentImage, 0, 240);
+    image(vida.thresholdImage, 0, 0);
+    
 
-          if(vida.activeZones[2].isMovementDetectedFlag){
-            
-            if(noteC.isPlaying() === true && noteC.currentTime() > 1) {
-              noteC.stop();
-              noteC.play();
-              console.log("%c========", 'color: red')
-            } else if (noteC.isPlaying() === false) {
-              console.log("%c========", 'color: green')
-              noteC.play();
-            }
-            
-          }
+    // let's also describe the displayed images
+    noStroke(); fill(255, 255, 255);
+    text('camera', 20, 260);
+    text('vida: threshold image', 340, 260);
+    /*
+      VIDA has two built-in versions of the function drawing active zones:
+        [your vida object].drawActiveZones(x, y);
+      and
+        [your vida object].drawActiveZones(x, y, w, h);
+      But we want to create our own drawing function, which at the same time
+      will be used for the current handling of zones and reading their statuses
+      (we must also remember about controlling the sound).
+    */
+    // defint size of the drawing
+    var temp_drawing_w = width / 2; var temp_drawing_h = height / 2;
+    // offset from the upper left corner
+    var offset_x = 320; var offset_y = 240;
+    // pixel-based zone's coords
+    var temp_x, temp_y, temp_w, temp_h;
+    push(); // store current drawing style and font
+    translate(offset_x, offset_y); // translate coords
+    // set text style and font
+    textFont('Helvetica', 10); textAlign(LEFT, BOTTOM); textStyle(NORMAL);
+    // let's iterate over all active zones
+    for (var i = 0; i < vida.activeZones.length; i++) {
 
-          if(vida.activeZones[3].isMovementDetectedFlag){
-            
-            if(noteD.isPlaying() === true && noteD.currentTime() > 1) {
-              noteD.stop();
-              noteD.play();
-              console.log("%c========", 'color: red')
-            } else if (noteD.isPlaying() === false) {
-              console.log("%c========", 'color: green')
-              noteD.play();
-            }
-            
-          }
-
-          if(vida.activeZones[4].isMovementDetectedFlag){
-            
-            if(noteE.isPlaying() === true && noteE.currentTime() > 1) {
-              noteE.stop();
-              noteE.play();
-              console.log("%c========", 'color: red')
-            } else if (noteE.isPlaying() === false) {
-              console.log("%c========", 'color: green')
-              noteE.play();
-            }
-            
-          }
-  
-          console.log(noteA.currentTime())
-  
-          // if(vida.activeZones[1].isMovementDetectedFlag){
-          //   if(noteA._playing !== true) {
-          //     noteA.play();
-          //   }
-          // }
-          
-        }
+      // read and convert norm coords to pixel-based
+      temp_x = Math.floor(vida.activeZones[i].normX * temp_drawing_w);
+      temp_y = Math.floor(vida.activeZones[i].normY * temp_drawing_h);
+      temp_w = Math.floor(vida.activeZones[i].normW * temp_drawing_w);
+      temp_h = Math.floor(vida.activeZones[i].normH * temp_drawing_h);
+      // draw zone rect (filled if movement detected)
+      strokeWeight(1);
+      if (vida.activeZones[i].isEnabledFlag) {
+        stroke(255);
+        if (vida.activeZones[i].isMovementDetectedFlag) fill(255);
+        else noFill();
       }
-      pop(); // restore memorized drawing style and font
-    }
-    else {
+      else {
+        stroke(0);
+        /*
+          Theoretically, movement should not be detected within the excluded
+          zone, but VIDA is still in the testing phase, so this line will be
+          useful for testing purposes.
+        */
+        if (vida.activeZones[i].isMovementDetectedFlag) fill(0, 0, 255);
+        else noFill();
+      }
+      rect(temp_x, temp_y, temp_w, temp_h);
+      // print id
+      noStroke();
+      if (vida.activeZones[i].isEnabledFlag) fill(255);
+      else fill(0);
+      text(vida.activeZones[i].id, temp_x, temp_y - 1);
       /*
-        If there are problems with the capture device (it's a simple mechanism so
-        not every problem with the camera will be detected, but it's better than
-        nothing) we will change the background color to alarmistically red.
+        Using the isChangedFlag flag is very important if we want to trigger an
+        behavior only when the zone has changed status.
       */
-      background(255, 0, 0);
+      if (vida.activeZones[i].isChangedFlag) {
+        // print zone id and status to console ... 
+        console.log(
+          'zone: ' + vida.activeZones[i].id +
+          ' status: ' + vida.activeZones[i].isMovementDetectedFlag
+        );
+        //... and use this information to control the sound.
+        // synth[vida.activeZones[i].id].amp(
+        //   0.1 * vida.activeZones[i].isMovementDetectedFlag
+        // );
+        if (vida.activeZones[0].isMovementDetectedFlag) {
+
+          if (noteA.isPlaying() === true && noteA.currentTime() > 1) {
+            noteA.stop();
+            noteA.play();
+            console.log("%c========", 'color: red')
+          } else if (noteA.isPlaying() === false) {
+            console.log("%c========", 'color: green')
+            noteA.play();
+          }
+
+        }
+
+        if (vida.activeZones[1].isMovementDetectedFlag) {
+
+          if (noteB.isPlaying() === true && noteB.currentTime() > 1) {
+            noteB.stop();
+            noteB.play();
+            console.log("%c========", 'color: red')
+          } else if (noteB.isPlaying() === false) {
+            console.log("%c========", 'color: green')
+            noteB.play();
+          }
+
+        }
+
+        if (vida.activeZones[2].isMovementDetectedFlag) {
+
+          if (noteC.isPlaying() === true && noteC.currentTime() > 1) {
+            noteC.stop();
+            noteC.play();
+            console.log("%c========", 'color: red')
+          } else if (noteC.isPlaying() === false) {
+            console.log("%c========", 'color: green')
+            noteC.play();
+          }
+
+        }
+
+        if (vida.activeZones[3].isMovementDetectedFlag) {
+
+          if (noteD.isPlaying() === true && noteD.currentTime() > 1) {
+            noteD.stop();
+            noteD.play();
+            console.log("%c========", 'color: red')
+          } else if (noteD.isPlaying() === false) {
+            console.log("%c========", 'color: green')
+            noteD.play();
+          }
+
+        }
+
+        if (vida.activeZones[4].isMovementDetectedFlag) {
+
+          if (noteE.isPlaying() === true && noteE.currentTime() > 1) {
+            noteE.stop();
+            noteE.play();
+            console.log("%c========", 'color: red')
+          } else if (noteE.isPlaying() === false) {
+            console.log("%c========", 'color: green')
+            noteE.play();
+          }
+
+        }
+
+        console.log(noteA.currentTime())
+
+        // if(vida.activeZones[1].isMovementDetectedFlag){
+        //   if(noteA._playing !== true) {
+        //     noteA.play();
+        //   }
+        // }
+
+      }
     }
+    pop(); // restore memorized drawing style and font
+  }
+  else {
+    /*
+      If there are problems with the capture device (it's a simple mechanism so
+      not every problem with the camera will be detected, but it's better than
+      nothing) we will change the background color to alarmistically red.
+    */
+    background(255, 0, 0);
+  }
 }
