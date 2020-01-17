@@ -55,13 +55,53 @@ function setup() {
   initCaptureDevice(); // and access to the camera
 
 
+
+  //** create table */
+  // coll
+  const tsv_column = datablob.columns
+  
+  const tableContainer = createDivForTalbe("container")
+
+  const headerLIne = createDivForTalbe("line header-line")
+
+  tableContainer.appendChild(headerLIne)
+
+  for(const collumnName of tsv_column) {
+    const collElement = createDivForTalbe("header-column column")
+    collElement.innerText = collumnName
+
+    headerLIne.append(collElement)
+  }
+
+  document.querySelector(".content").appendChild(tableContainer)
+
   for (const line of datablob.rows) {
-    console.log(line.obj["Heure locale"])
-    console.log(line.obj["Magnitude"])
-    console.log(line.obj["Localite"])
-    console.log(line.obj["Profondeur"])
-    console.log(line.obj["Latitude"])
-    console.log(line.obj["Longitude"])
+
+    const bodyLIne = createDivForTalbe("line body-line")
+
+    const bodyCollHeur = createDivForTalbe("body-column column")
+    const bodyCollMagn = createDivForTalbe("body-column column")
+    const bodyCollLoc = createDivForTalbe("body-column column")
+    const bodyCollProf = createDivForTalbe("body-column column")
+    const bodyCollLat = createDivForTalbe("body-column column")
+    const bodyCollLong = createDivForTalbe("body-column column")
+
+    bodyCollHeur.innerText  = line.obj["Heure locale"]
+    bodyCollMagn.innerText  = line.obj["Magnitude"]
+    bodyCollLoc.innerText   = line.obj["Localite"]
+    bodyCollProf.innerText  = line.obj["Profondeur"]
+    bodyCollLat.innerText   = line.obj["Latitude"]
+    bodyCollLong.innerText  = line.obj["Longitude"]
+
+    bodyLIne.appendChild(bodyCollHeur)
+    bodyLIne.appendChild(bodyCollMagn)
+    bodyLIne.appendChild(bodyCollLoc)
+    bodyLIne.appendChild(bodyCollProf)
+    bodyLIne.appendChild(bodyCollLat)
+    bodyLIne.appendChild(bodyCollLong)
+
+    tableContainer.appendChild(bodyLIne)
+
   }
   /*
     VIDA stuff. One parameter - the current sketch - should be passed to the
@@ -365,4 +405,12 @@ function draw() {
     */
     background(255, 0, 0);
   }
+}
+
+
+function createDivForTalbe(classForDiv) {
+  const div = document.createElement('div')
+  div.className = classForDiv
+
+  return div
 }
