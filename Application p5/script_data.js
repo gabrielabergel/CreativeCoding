@@ -6,15 +6,34 @@ let maxMag;
 let minMag;
 let maxProf;
 let minProf;
+let c;
+
+const ration = 2
 
 
 
 function preload() {
-    datablob = loadTable("http://127.0.0.1:5500/seisme.tsv", "tsv", "header")
+    datablob = loadTable("http://127.0.0.1:5501/seisme.tsv", "tsv", "header")
+    
 }
 
 function setup() {
-    createCanvas(windowWidth, 220);
+    // console.log(datablob)
+    // console.log(datablob.columns);
+    // console.log(datablob.rows);
+
+    for(const line of datablob.rows) {
+        console.log(line.obj["Heure locale"])
+        console.log(line.obj["Magnitude"])
+        console.log(line.obj["Localite"])
+        console.log(line.obj["Profondeur"])
+        console.log(line.obj["Latitude"])
+        console.log(line.obj["Longitude"])
+    }
+
+    //let c = createCanvas(504/ration , 384/ration);
+
+    let c = createCanvas(384/ration ,504/ration);
     background(255);
     //print(datablob.getRowCount() + ' total rows in table');
     //print(datablob.getColumnCount() + ' total columns in table');
@@ -35,39 +54,24 @@ function setup() {
     let multiplier;
     let scale;
 
-    // //calcule de l'intensity
-    // arrayOfMagnitude.map((mag, index) => {
-    //
-    //     multiplier = (mag * profondeur[index]) / maxMag;
-    //     scale = map(profondeur[index],minProf,maxProf,5,0);
-    //     let intensity = (scale * mag).toFixed(2);
-    //     // console.log(index, mag, profondeur[index], localite[index] + ": " + intensity)
-    //     for (let i = 0; i < 10; i++) {
-    //
-    //         let poseY = 50 * (intensity + 1)
-    //
-    //
-    //         // ecart entre les cercles - step
-    //         step = (i * 35)
-    //         fill(0)
-    //         ellipse(step, poseY, 25, 25)
-    //         console.log(intensity)
-    //         // console.log(step + "hello");
-    //         // console.log(profondeur);
-    //     }
-    //
-    // })
-
     // point spacing parameters
-    const stepPositionX     = 45
-    const stepPositionY     = 30
+    const stepPositionY     = 100/ration
+    const stepPositionX     = 60/ration
 
     // global position parameters
-    const topPosition       = 35
-    const leftPosition      = 40
-    let indexOfColumnsPrinted = 0 // increment after column printed
-    const stepOfColumnToPrint = 200
+    const topPosition       = 42/ration
+    const leftPosition      = 40/ration
 
+   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    let indexOfColumnsPrinted = 10 // increment after column printed
+   
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const stepOfColumnToPrint = 5 //number of notes
     const indexToStart = indexOfColumnsPrinted * stepOfColumnToPrint
     const indexEnd = stepOfColumnToPrint + (stepOfColumnToPrint * indexOfColumnsPrinted)
 
@@ -85,11 +89,11 @@ function setup() {
             const intensity = arrayOfIntensity[i]
 
             const intensityMapped = map(intensity, minIntensityCalc, maxIntensityCalc, 0, 5)
-            const poseX = indexLeftPosition * stepPositionX + leftPosition
-            const poseY = Math.round(intensityMapped) * stepPositionY + topPosition + (stepPositionY / 2)
+            const poseY = indexLeftPosition * stepPositionY + leftPosition
+            const poseX = Math.round(intensityMapped) * stepPositionX + topPosition + (stepPositionX / 2)
 
             fill(0)
-            ellipse(poseX, poseY, 25, 25)
+            ellipse(poseX, poseY, 40/ration, 40/ration)
         } else {
             // todo: code to execute at the end of array
             break
@@ -102,63 +106,38 @@ function setup() {
     maxProf = Math.max(...arrayOfProfondeur);
     minProf = Math.min(...arrayOfProfondeur);
 
-    // fill(0);
-    // // let w = width / magnitude.length;
-    // for (let i = 0; i < 10; i++) {
-    // profondeur = datablob.getColumn('Profondeur');
-    // maxProf = Math.max(...profondeur);
-    // minProf = Math.min(...profondeur);
-
-    // let scaleProf = map(profondeur.map(Number),minProf,maxProf,5,0);
-    // fill(0);
-
-    // // let step = 30
-    // // step * (valeur + 1)
-    // // ecart entre les cercles - step
-    // let step = 0
-    // step =  (i * 35)
-    // ellipse(step, profondeur [200 + 135] , 25,25);
-    // // console.log(step + "hello");
-    // // console.log(profondeur);
-    // }
-
     //print les valeurs
     console.log(minMag,maxMag)
     console.log(minProf,maxProf)
-
-
-    //   fill(0);
-    //   textAlign(CENTER);
-    //   push();
-    //   translate(posx + w / 2, height / 2);
-    //   textSize(30)
-    //   text(localite[i], 0, 0);
-    //   pop();
 }
 
 function draw() {
-    //rect(10,10,windowWidth-20, 220-20);
-    //fill(255);
-   //lignes partition pour les notes//
-    // line(10, height / 2 - 120, windowWidth - 10, height / 2 - 120 );
-  let lineP1 = line(10, height / 2 - 75, windowWidth - 10, height / 2 - 75 );
-  let line2 = line(10, height / 2 - 45, windowWidth - 10, height / 2 - 45);
-  let line3 = line(10, height / 2 - 15, windowWidth - 10, height / 2 - 15);
-  let line4 = line(10, height / 2 + 15, windowWidth - 10, height / 2 + 15);
-  let line5 = line(10, height / 2 + 45, windowWidth - 10, height / 2 + 45);
-  let line6 = line(10, height / 2 + 75, windowWidth - 10, height / 2 + 75);
 
-//     push();
-//     fill(0);
-//     // if(intensity < 0 && intensity > -1){ ellipse(30, height / 2 - 60, 20);}
+//grid of the partition
 
-//     ellipse(30, height / 2 - 30, 20);
-//     ellipse(30, height / 2 , 20);
-//     ellipse(30, height / 2 + 30, 20);
-//     ellipse(30, height / 2 + 60, 20);
-//     pop();
-//     translate(30,0);
+line(width / 2 - 150/ration, 504, width / 2 - 150/ration, 0);
+line(width / 2 - 90/ration, 504, width / 2 - 90/ration, 0);
+line(width / 2 - 30/ration, 504, width / 2 - 30/ration, 0);
+line(width / 2 + 30/ration, 504, width / 2 + 30/ration, 0);
+line(width / 2 + 90/ration, 504, width / 2 + 90/ration, 0);
+line(width / 2 + 150/ration, 504, width / 2 + 150/ration, 0);
+
+// line(0, height / 2 - 90/ration, width, height / 2 - 90/ration);
+// line(0, height / 2 - 30/ration, width, height / 2 - 30/ration);
+// line(0, height / 2 + 30/ration, width, height / 2 + 30/ration);
+// line(0, height / 2 + 90/ration, width, height / 2 + 90/ration);
+// line(0, height / 2 + 150/ration, width, height / 2 + 150/ration);
+
+// textSize(15);
+// text("fragment sonore", 250,height-20);
+
 }
+
+//save the image
+function mouseClicked() {
+saveCanvas('Partition','png');
+
+ }
 
 // function declaration
 

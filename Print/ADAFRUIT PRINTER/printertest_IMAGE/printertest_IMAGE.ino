@@ -12,7 +12,7 @@
   ------------------------------------------------------------------------*/
 
 #include "Adafruit_Thermal.h"
-#include "adalogo.h"
+#include "partition.h"
 
 // Here's the new syntax when using SoftwareSerial (e.g. Arduino Uno) ----
 // If using hardware serial instead, comment out or remove these lines:
@@ -50,8 +50,8 @@ void setup() {
   // Some functions will feed a line when called, this is normal.
 
 
-  // Print the 75x75 pixel logo in adalogo.h:
-  printer.printBitmap(adalogo_width, adalogo_height, adalogo_data);
+  // Print the parition
+  printer.printBitmap(partition_width, partition_height, partition_data);
 
 
   printer.sleep();      // Tell printer to sleep

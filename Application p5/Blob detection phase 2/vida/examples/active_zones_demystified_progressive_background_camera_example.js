@@ -64,7 +64,7 @@ function setup() {
     (float). Typical values of this variable are in the range between ~0.9 and
     ~0.98.
   */
-  vida.imageFilterFeedback = 0.92;
+  vida.imageFilterFeedback = 0.82;
   /*
     The value of the threshold for the procedure that calculates the threshold
     image. The value should be in the range from 0.0 to 1.0 (float).
@@ -99,10 +99,10 @@ function setup() {
     of the zones are independent of any eventual changes in the captured image
     resolution.
   */
-  var padding = 0.045; var n = 5;
-  var zoneWidth = 0.09; var zoneHeight = 0.1;
-  var hOffset = (1.0 - (n * zoneWidth + (n - 1) * padding)) / 2.0;
-  var vOffset = 0.45;
+  var padding = 0.052; var n = 5;
+  var zoneWidth = 0.06; var zoneHeight = 0.1;
+  var hOffset = (1.0 - (n * zoneWidth + (n - 1) * padding)) / 3.4;
+  var vOffset = 0.55;
   for(var i = 0; i < n; i++) {
     /*
       addActiveZone function (which, of course, adds active zones to the VIDA

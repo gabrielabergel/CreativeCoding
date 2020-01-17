@@ -14,7 +14,7 @@ void processImage(File image) {
               x, y, b, rowBytes, totalBytes, lastBit, sum;
   println("Loading image...");
   filename = image.getPath();
-  rotate(180);
+ 
   img      = loadImage(image.getPath());
 rotate(180);
   // Morph filename into output filename and base name for data
